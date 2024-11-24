@@ -44,17 +44,6 @@ class IupacNucleotideCodeBase(Tuple, Enum):
         return nucleotide in self.value
 
 
-
-
-
-
-
-
-
-
-
-
-
 @dataclass
 class Sequentie(ABC):
     sequentie: str
