@@ -58,7 +58,11 @@ def iupac_codes():
 
 @app.get("/iupac/nucleotides/{code}")
 def iupac_nucleotides(code: str):
-    return {"iupac_code": code, "iupac_nucleotides": IupacNucleotideCodeBase[code].value}
+    try:
+        result = IupacNucleotideCodeBase[code].value
+    except KeyError as e:
+        raise HTTPException(status_code=404, detail=f"Opgegeven code is niet geldig: {e}")
+    return {"iupac_code": code, "iupac_nucleotides": result}
 
 
 @app.get("/app/matcht/{nucleotide}/{code}")
