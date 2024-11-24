@@ -1,0 +1,35 @@
+name: Sequence API
+
+on:
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install Python 3.13
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.13"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install poetry
+        poetry install --no-root
+    - name: Lint and format with ruff
+      run: |
+        ruff check --output-format=github
+        ruff format --output-format=github
+    - name: Unit tests
+      run: poetry run pytest tests/unit
+    - name: Integration tests
+      run: poetry run pytest tests/integration
+    - name: Run benchmark report
+      run: poetry run pytest tests/benchmark -v
