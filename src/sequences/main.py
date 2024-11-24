@@ -61,7 +61,20 @@ def iupac_nucleotides(code: str):
     return {"iupac_code": code, "iupac_nucleotides": IupacNucleotideCodeBase[code].value}
 
 
-@app.get("/app/{dna_profiel}/past_in/{dna_spoor}")
+@app.get("/app/matcht/{nucleotide}/{code}")
+def nucleotide_matcht_iupac_code(nucleotide: str, code: str):
+    try:
+        nuc = NucleotideBase(nucleotide)
+        code_base = IupacNucleotideCodeBase[code]
+    except KeyError as e:
+        raise HTTPException(status_code=404, detail=f"Opgegeven nucleotide/code is niet geldig: {e}")
+
+    if not code_base.matched_nucleotide_base(nuc):
+        return {"nucleotide": nucleotide , "code": code , "matcht": False}
+    return {"nucleotide": nucleotide , "code": code , "matcht": True}
+
+
+@app.get("/app/past_in/{dna_profiel}/{dna_spoor}")
 def profiel_past_in_spoor(dna_spoor: str, dna_profiel: str):
     try:
         spoor = DNASpoor(dna_spoor)
@@ -80,6 +93,7 @@ def profiel_past_in_spoor(dna_spoor: str, dna_profiel: str):
         if not spoor_base.matched_nucleotide_base(profiel_base):
             return {"dna_spoor": dna_spoor, "dna_profiel": dna_profiel, "profiel_past_in_spoor": False}
     return {"dna_spoor": dna_spoor, "dna_profiel": dna_profiel, "profiel_past_in_spoor": True}
+
 
 #
 # if __name__ == "__main__":
