@@ -33,13 +33,9 @@ DNA Profiel:        ATTCGATTGATTAGCT    DNA profiel past in spoor
 DNA Profiel:        ATTCGATTAATTAGCT    DNA profiel past niet in spoor
                             ^
 """
+from fastapi import FastAPI
 
-from domains import (
-    NucleotideBase,
-    IupacNucleotideCodeBase,
-    DNASpoor,
-    DNAProfiel
-)
+from sequences.domains import NucleotideBase, IupacNucleotideCodeBase, DNASpoor, DNAProfiel
 
 
 def profiel_past_in_spoor(dna_spoor: DNASpoor, dna_profiel: DNAProfiel) -> bool:
@@ -54,6 +50,29 @@ def profiel_past_in_spoor(dna_spoor: DNASpoor, dna_profiel: DNAProfiel) -> bool:
         if not spoor_base.matched_nucleotide_base(profiel_base):
             return False
     return True
+
+
+app = FastAPI()
+
+
+@app.get("/")
+def read_root():
+    return {"Hello": "User"}
+
+
+@app.get("/nucleotides/bases")
+def nucleotide_base():
+    return {"bases": NucleotideBase.string_of_nucleotides()}
+
+
+@app.get("/iupac/codes")
+def iupac_codes():
+    return {"iupac_codes": IupacNucleotideCodeBase.iupac_sequentie_patroon()}
+
+
+@app.get("/iupac/nucleotides/{code}")
+def iupac_nucleotides(code: str):
+    return {"iupac_code": code, "iupac_nucleotides": IupacNucleotideCodeBase[code].value}
 
 
 if __name__ == "__main__":
