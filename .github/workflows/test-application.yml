@@ -25,8 +25,8 @@ jobs:
         poetry install --no-root
     - name: Lint and format with ruff
       run: |
-        ruff check --output-format=github
-        ruff format --output-format=github
+        poetry run ruff check --output-format=github
+        poetry run ruff format --diff
     - name: Unit tests
       run: poetry run pytest tests/unit
     - name: Integration tests
