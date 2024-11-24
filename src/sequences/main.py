@@ -32,11 +32,16 @@ DNA Spoor:          ATTCGWTTBATTVGCT
 DNA Profiel:        ATTCGATTGATTAGCT    DNA profiel past in spoor
 DNA Profiel:        ATTCGATTAATTAGCT    DNA profiel past niet in spoor
                             ^
-"""
+"""  # noqa: E501
+
 from fastapi import FastAPI, HTTPException
 
-from sequences.domains import NucleotideBase, IupacNucleotideCodeBase, DNASpoor, DNAProfiel
-
+from sequences.domains import (
+    DNAProfiel,
+    DNASpoor,
+    IupacNucleotideCodeBase,
+    NucleotideBase,
+)
 
 app = FastAPI()
 
@@ -61,7 +66,9 @@ def iupac_nucleotides(code: str):
     try:
         result = IupacNucleotideCodeBase[code].value
     except KeyError as e:
-        raise HTTPException(status_code=404, detail=f"Opgegeven code is niet geldig: {e}")
+        raise HTTPException(
+            status_code=404, detail=f"Opgegeven code is niet geldig: {e}"
+        ) from e
     return {"iupac_code": code, "iupac_nucleotides": result}
 
 
@@ -71,11 +78,13 @@ def nucleotide_matcht_iupac_code(nucleotide: str, code: str):
         nuc = NucleotideBase(nucleotide)
         code_base = IupacNucleotideCodeBase[code]
     except KeyError as e:
-        raise HTTPException(status_code=404, detail=f"Opgegeven nucleotide/code is niet geldig: {e}")
+        raise HTTPException(
+            status_code=404, detail=f"Opgegeven nucleotide/code is niet geldig: {e}"
+        ) from e
 
     if not code_base.matched_nucleotide_base(nuc):
-        return {"nucleotide": nucleotide , "code": code , "matcht": False}
-    return {"nucleotide": nucleotide , "code": code , "matcht": True}
+        return {"nucleotide": nucleotide, "code": code, "matcht": False}
+    return {"nucleotide": nucleotide, "code": code, "matcht": True}
 
 
 @app.get("/app/past_in/{dna_profiel}/{dna_spoor}")
@@ -84,60 +93,77 @@ def profiel_past_in_spoor(dna_spoor: str, dna_profiel: str):
         spoor = DNASpoor(dna_spoor)
         profiel = DNAProfiel(dna_profiel)
     except (ValueError, TypeError) as e:
-        raise HTTPException(status_code=404, detail=f"Opgegeven spoor voldoet niet aan vereisten: {e}")
+        raise HTTPException(
+            status_code=404, detail=f"Opgegeven spoor voldoet niet aan vereisten: {e}"
+        ) from e
 
     if len(profiel.sequentie) != len(spoor.sequentie):
-        return {"dna_spoor": dna_spoor, "dna_profiel": dna_profiel, "profiel_past_in_spoor": False}
+        return {
+            "dna_spoor": dna_spoor,
+            "dna_profiel": dna_profiel,
+            "profiel_past_in_spoor": False,
+        }
     elif profiel.sequentie == spoor.sequentie:
-        return {"dna_spoor": dna_spoor, "dna_profiel": dna_profiel, "profiel_past_in_spoor": True}
+        return {
+            "dna_spoor": dna_spoor,
+            "dna_profiel": dna_profiel,
+            "profiel_past_in_spoor": True,
+        }
 
     for i in range(len(profiel.sequentie)):
         profiel_base = NucleotideBase(profiel.sequentie[i])
         spoor_base = IupacNucleotideCodeBase[spoor.sequentie[i]]
         if not spoor_base.matched_nucleotide_base(profiel_base):
-            return {"dna_spoor": dna_spoor, "dna_profiel": dna_profiel, "profiel_past_in_spoor": False}
-    return {"dna_spoor": dna_spoor, "dna_profiel": dna_profiel, "profiel_past_in_spoor": True}
+            return {
+                "dna_spoor": dna_spoor,
+                "dna_profiel": dna_profiel,
+                "profiel_past_in_spoor": False,
+            }
+    return {
+        "dna_spoor": dna_spoor,
+        "dna_profiel": dna_profiel,
+        "profiel_past_in_spoor": True,
+    }
 
 
-#
-# if __name__ == "__main__":
-#     stop_input = "X"
-#     nieuw_spoor_input = "SPOOR"
-#
-#     stop_bool = False
-#     nieuw_spoor_bool = True
-#
-#     print(f"Voer '{stop_input}' in om het programma te stoppen.")
-#     while not stop_bool:
-#         if nieuw_spoor_bool:
-#             user_input = input("Voer een sequentie voor het spoor in:").upper()
-#             try:
-#                 dna_spoor = DNASpoor(user_input)
-#                 nieuw_spoor_bool = False
-#             except ValueError as e:
-#                 if user_input == stop_input:
-#                     print("Het programma sluit af...")
-#                     stop_bool = True
-#                 else:
-#                     print(e)
-#                 continue
-#             print(f"Voer '{nieuw_spoor_input}' in om een nieuw spoor op te geven.")
-#
-#         user_input = input("Voer een sequentie voor het dna profiel in:").upper()
-#         try:
-#             dna_profiel = DNAProfiel(user_input)
-#             if profiel_past_in_spoor(dna_spoor, dna_profiel):
-#                 print(f"\tHet DNA profiel past in spoor: {dna_spoor} vs {dna_profiel}")
-#             else:
-#                 print(
-#                     f"\tHet DNA profiel past niet in spoor: {dna_spoor} vs {dna_profiel}"
-#                 )
-#         except ValueError as e:
-#             if user_input == stop_input:
-#                 print("Het programma sluit af...")
-#                 stop_bool = True
-#             elif user_input == nieuw_spoor_input:
-#                 nieuw_spoor_bool = True
-#             else:
-#                 print(e)
-#             continue
+"""if __name__ == "__main__":
+    stop_input = "X"
+    nieuw_spoor_input = "SPOOR"
+
+    stop_bool = False
+    nieuw_spoor_bool = True
+
+    print(f"Voer '{stop_input}' in om het programma te stoppen.")
+    while not stop_bool:
+        if nieuw_spoor_bool:
+            user_input = input("Voer een sequentie voor het spoor in:").upper()
+            try:
+                dna_spoor = DNASpoor(user_input)
+                nieuw_spoor_bool = False
+            except ValueError as e:
+                if user_input == stop_input:
+                    print("Het programma sluit af...")
+                    stop_bool = True
+                else:
+                    print(e)
+                continue
+            print(f"Voer '{nieuw_spoor_input}' in om een nieuw spoor op te geven.")
+
+        user_input = input("Voer een sequentie voor het dna profiel in:").upper()
+        try:
+            dna_profiel = DNAProfiel(user_input)
+            if profiel_past_in_spoor(dna_spoor, dna_profiel):
+                print(f"\tHet DNA profiel past in spoor: {dna_spoor} vs {dna_profiel}")
+            else:
+                print(
+                    f"\tHet DNA profiel past niet in spoor: {dna_spoor} vs {dna_profiel}"
+                )
+        except ValueError as e:
+            if user_input == stop_input:
+                print("Het programma sluit af...")
+                stop_bool = True
+            elif user_input == nieuw_spoor_input:
+                nieuw_spoor_bool = True
+            else:
+                print(e)
+            continue"""  # noqa: E501

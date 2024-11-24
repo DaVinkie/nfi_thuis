@@ -8,16 +8,28 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.13"
 fastapi = {extras = ["standard"], version = "^0.115.5"}
-pytest = "^8.3.3"
-ruff = "^0.8.0"
 ipython = "^8.29.0"
 uvicorn = {extras = ["standard"], version = "^0.32.1"}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
 pytest-benchmark = "^5.1.0"
 httpx = "^0.27.2"
+ruff = "^0.8.0"
+
 
 [tool.pytest.ini_options]
 pythonpath = [
   "src"
+]
+
+[tool.ruff.lint]
+select = [
+    "E", # pycodestyle
+    "F", # Pyflakes
+    "B", # flake8-bugbear
+    "SIM", # flake8-simplify
+    "I", # isort
 ]
 
 

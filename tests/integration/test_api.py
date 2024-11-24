@@ -2,7 +2,6 @@ from fastapi.testclient import TestClient
 
 from sequences.main import app
 
-
 client = TestClient(app)
 
 
@@ -43,5 +42,5 @@ def test_profiel_past_in_spoor():
 
 
 def test_profiel_past_in_spoor_wrong_input():
-    response = client.get(f"/app/past_in/A/3")
+    response = client.get("/app/past_in/A/3")
     assert response.status_code == 404

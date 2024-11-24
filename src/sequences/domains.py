@@ -1,9 +1,9 @@
 import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from enum import StrEnum, Enum
+from enum import Enum, StrEnum
 from functools import cache
-from typing import Tuple, Pattern, AnyStr
+from typing import AnyStr, Pattern, Tuple
 
 
 class NucleotideBase(StrEnum):
@@ -41,10 +41,7 @@ class IupacNucleotideCodeBase(Tuple, Enum):
         return "".join(iupac.name for iupac in cls)
 
     def matched_nucleotide_base(self, nucleotide: NucleotideBase):
-        if nucleotide in self.value:
-            return True
-        else:
-            return False
+        return nucleotide in self.value
 
 
 @dataclass
